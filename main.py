@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Response, status
 #from fastapi.params import Body : works fine, but My Vscode is not happy
 from pydantic import BaseModel
 #the randrange is cause we have no database and have to assign an id
@@ -33,15 +33,19 @@ def root():
     return {"message": "Hello World"}
 
 @app.get("/posts/{id}")
-def get_post(id: int):
-    post = find_posts(id) # becomes str so we change to int
+def get_post(id: int,): #response: Response):
+    post = find_posts(id)
+    if not post:
+        #response.status_code = status.HTTP_404_NOT_FOUND/same difference, slightly cleaner
+        #return {"message": f"post with {id} is not found"}
+        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail=f"post with {id} is not found")
     return {"data" : post}
 
 @app.get("/posts")
 def get_posts():
     return {"data" : my_posts}
 
-@app.post("/posts")
+@app.post("/posts", status_code=status.HTTP_201_CREATED)
 def create_post(post:Post):
     post_dict = post.dict()
     post_dict['id'] = randrange(0,9999)

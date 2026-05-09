@@ -56,4 +56,109 @@ Update - Put(All)/Patch(One specific)
 Delete - Delete
 
 Path Parameters are always return as strings
+
+GIT Tutorial: for 774th time
+1. Open terminal in your FastAPI project
+
+Example:
+
+cd ~/Documents/Python\ Learn\ P2/fastapi-project
+
+Check you're in the correct folder:
+
+ls
+
+You should see things like:
+
+main.py
+venv/
+requirements.txt
+2. Initialize git (if not already initialized)
+    git init
+
+Check status:
+
+    git status
+3. Create a .gitignore
+
+Very important for Python/FastAPI projects.
+
+Create:
+
+    touch .gitignore
+
+Put this inside:
+
+venv/
+__pycache__/
+*.pyc
+.env
+.idea/
+.vscode/
+
+You usually do NOT want to upload your virtual environment.
+
+4. Add files
+    git add .
+5. Commit
+    git commit -m "Initial FastAPI project"
+
+If git complains about username/email:
+
+    git config --global user.name "YourName"
+    git config --global user.email "you@example.com"
+
+Then commit again.
+
+6. Create a GitHub repo
+
+Go to:
+GitHub
+Create a new repository.
+
+Do NOT initialize it with:
+    README
+    .gitignore
+    license
+if your local project already exists.
+
+7. Connect local repo to GitHub
+GitHub will show commands like this.
+Replace with your repo URL:
+    git remote add origin https://github.com/USERNAME/REPO.git
+
+Example:
+    git remote add origin https://github.com/tumitarantino/my-fastapi-app.git
+
+8. Push to GitHub
+Main branch:
+    git branch -M main
+    git push -u origin main
+
+You may get a GitHub login popup/token prompt.
+
+9. Later workflow (after changes)
+After editing code:
+    git add .
+    git commit -m "Added item routes"
+    git push
+
+That becomes your normal cycle.
+
+Useful checks:
+
+git remote -v
+Shows connected GitHub repo.
+
+git log --oneline
+Shows commits.
+
+git status
+Shows changed files.
+
+For FastAPI specifically, it’s also good practice to eventually add:
+    pip freeze > requirements.txt
+
+so others can install your dependencies with:
+    pip install -r requirements.txt
      
