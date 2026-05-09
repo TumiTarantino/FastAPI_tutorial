@@ -1,0 +1,59 @@
+Hi this is the Python API course on FreecodeCamp on Youtube
+Um, this file is mainly just to outline and document in a sense what is going to and is happening in the course
+Tech Stack:
+    Python-Fastapi(Really fast and built with APIs in mind)
+    -Has auto documentation and really fast API implementation
+    SQL-Postgres(Who doesn't like elephants?)
+    ORM-SQLALCHEMY(Most popular for Python)
+APIs don't really have any visual way to show themselves(unless you want to verify HTTP packets)
+Documentation can show more or less what an API does.
+
+Project for the course is a social media type where users can use all of CRUD operations.
+-Like posts, etc
+
+Development Environment Setup:
+-Install Python
+-Install VS Code
+-Setup Virtual Environment(Basically Like Docker, helps with keeping version consistency and prevents breaking from different versions)
+    Two steps usually: VSCODE Selected Interpreter and The Terminal's Interpreter
+    VSCODE Selected Interpreter:
+    py -3 -m venv <name> : command for setting up a virtual environment in VSCODE.
+    Afterwards select the Python intrepreter in the venv as the python exe from the command pallette
+    Terminal's Interpreter:
+    in the terminal, run the command:
+    <current/project directory>/Script/activate or activate.bat for windows cmd/pwsh
+    that command should let the terminal change the interpreter and if it works the venv's name should appear behind your prompt
+    AFTER CLOSING VSCODE, do this or check to make sure that Vscode is pointing to the correct interpreter and also the terminal is pointing to the correct terminal
+    Future or Past Me:
+    "Use . test_venv/Scripts/activate to activate the venv for your project
+     using ./test_venv/Scripts/activate creates a child process and is temporary so it does work but doesn't persist.
+     Something to do with running a script in a new process versus using 'source' the '.' is the same as 'source'"
+
+Running App in Fastapi: uvicorn main:app --reload (main is the name of the "main.py" so it could be anything, app is the name of the variable that stores the FastAPI() function so it could also be anything)
+
+You should read the FastAPI documentation for a clear overview of what's popping.
+
+You don't or rather shouldn't need to build a frontend to test a backend, it's unscalable.
+To solve this dilemma; you should use PostMan.
+
+Postman:
+You COULD use the browser for GET requests, but for other methods nono
+Use Postman's different HTTP methods to test your routes in your API
+
+VSCODE is saying the code is wrong, but the code is fine, this is cause Pylance or whatever doesn't know how FastAPI works.
+
+Why you need schema:
+-Pain to get values from body
+-Client can send whatever they want
+-Data isn't validated
+-We need to force client to send data in a format we expect
+
+When naming paths always use the plural
+CRUD operations/methods
+Create - Post
+Read - Get
+Update - Put(All)/Patch(One specific)
+Delete - Delete
+
+Path Parameters are always return as strings
+     
