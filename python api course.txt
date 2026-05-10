@@ -30,6 +30,9 @@ Development Environment Setup:
      Something to do with running a script in a new process versus using 'source' the '.' is the same as 'source'"
 
 Running App in Fastapi: uvicorn main:app --reload (main is the name of the "main.py" so it could be anything, app is the name of the variable that stores the FastAPI() function so it could also be anything)
+Running App v2: After creating a folder called app and using the __init__ file to make it into a python package
+                the above command won't work so you will have to use:
+                uvicorn app.main:app --reload // yes
 
 You should read the FastAPI documentation for a clear overview of what's popping.
 
