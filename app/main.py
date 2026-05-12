@@ -31,7 +31,7 @@ class Post(BaseModel):
     title: str
     content: str
     published: bool = True
-    rating: Optional[int] = None
+    #rating: Optional[int] = None (Removed was only for testing)
 
 
 @app.get("/")
