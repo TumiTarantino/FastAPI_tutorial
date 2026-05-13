@@ -206,3 +206,6 @@ We installed SQLALCHEMY v1.4 since v2.0 is very different
 SQLALCHEMY can't 'talk' to a database and thus needs a driver
 We are fine since we already installed umm, Psycopg2 as the driver.
 The FastAPI documents is showing importing SQLMODELS(new) but we'll use SQLALCHEMY(old)
+Database URL: 'postgresql://<username>:<password>@<ip-address/hostname>/<database-name>'
+WE added this SQLALCHEMY stuff to a separate file called database.py
+Now we'll define models at models.py
