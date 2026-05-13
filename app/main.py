@@ -59,11 +59,10 @@ def root():
     return {"message": "Hello World"}
 
 @app.get("/posts/{id}")
-def get_post(id: int,): #response: Response):
-    post = find_posts(id)
+def get_post(id: int,):
+    cursor.execute("""SELECT * FROM posts WHERE id = %s """,(id,))
+    post = cursor.fetchone()
     if not post:
-        #response.status_code = status.HTTP_404_NOT_FOUND/same difference, slightly cleaner
-        #return {"message": f"post with {id} is not found"}
         raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail=f"post with {id} is not found")
     return {"data" : post}
 
@@ -75,27 +74,24 @@ def get_posts():
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
 def create_post(post:Post):
-    #OLD LOGIC
-    #post_dict = post.dict()
-    #post_dict['id'] = randrange(0,9999)
-    #my_posts.append(post_dict)
-    
     #Try to sanitize the statement(NO SQL INJECTION PLZ)
     cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """,
                    (post.title, post.content, post.published))
-    new_post = cursor.fetchall()#Saves the executed result in a variable, fetchall gets the result of the execute
+    new_post = cursor.fetchone()#Saves the executed result in a variable, fetchall gets the result of the execute
     conn.commit()# Saves changes to the actual database
     return {"data": new_post}
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id: int):
-    index = find_index_post(id)
-    if index is None:
+    cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING * """,(id,))
+    deleted_post = cursor.fetchone()
+    conn.commit()
+
+    if deleted_post is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"post with id: {id} does not exist"
         )
-    my_posts.pop(index)
     #Apparently if you delete data or 204 is the status code, you don't want to return anything
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
