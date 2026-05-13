@@ -85,25 +85,26 @@ def create_post(post:Post):
 def delete_post(id: int):
     cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING * """,(id,))
     deleted_post = cursor.fetchone()
-    conn.commit()
+    
 
     if deleted_post is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"post with id: {id} does not exist"
         )
+    conn.commit()
     #Apparently if you delete data or 204 is the status code, you don't want to return anything
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @app.put("/posts/{id}")
 def update_post(id: int, post: Post):
-    index = find_index_post(id)
-    if index is None:
+    cursor.execute("""UPDATE posts SET title= %s, content= %s, published= %s WHERE id = %s RETURNING * """,
+                   (post.title, post.content, post.published, id,))
+    updated_post = cursor.fetchone()
+    if updated_post is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"post with id: {id} does not exist"
         )
-    post_dict = post.dict()# converts data from post to a dictionary
-    post_dict['id'] = id
-    my_posts[index] = post_dict
-    return{"data": post_dict}
+    conn.commit()
+    return{"data": updated_post}
