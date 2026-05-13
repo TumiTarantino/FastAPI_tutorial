@@ -5,6 +5,10 @@ from fastapi import FastAPI, HTTPException, Response, status
 from pydantic import BaseModel
 #the randrange is cause we have no database and have to assign an id
 from random import randrange
+import time
+
+import psycopg2 # Database Driver
+from psycopg2.extras import RealDictCursor
 #Global variables
 app = FastAPI()
 #No database for now, luckily RAM exists
@@ -21,6 +25,22 @@ def find_index_post(id):
     for i, p in enumerate(my_posts):
         if p['id'] == id:
             return i
+        
+#----------------DATABASE STUFF---------------------------------------------------
+while True:#Tries untils connection is successful then breaks out of loop
+    try:
+        # stuff is hardcoded which is eww, will change later since we dk how yet, ooof,
+        conn = psycopg2.connect(host = 'localhost', database='FastAPI', user='postgres', password='tumitino',
+                               cursor_factory=RealDictCursor)
+        cursor = conn.cursor()
+        print("Database connection was successful!")
+        break
+    except Exception as error:
+        print("Connection to database was unsuccessful.")
+        print("Error", error) #Prints what was caught
+        time.sleep(3)# waits for 3 seconds until restarting loop
+    
+#----------------DATABASE END-----------------------------------------------------
 
 
 
@@ -49,14 +69,23 @@ def get_post(id: int,): #response: Response):
 
 @app.get("/posts")
 def get_posts():
-    return {"data" : my_posts}
+    cursor.execute("""SELECT * FROM posts """)
+    posts = cursor.fetchall()
+    return {"data" : posts}
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
 def create_post(post:Post):
-    post_dict = post.dict()
-    post_dict['id'] = randrange(0,9999)
-    my_posts.append(post_dict)
-    return {"data": post_dict}
+    #OLD LOGIC
+    #post_dict = post.dict()
+    #post_dict['id'] = randrange(0,9999)
+    #my_posts.append(post_dict)
+    
+    #Try to sanitize the statement(NO SQL INJECTION PLZ)
+    cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """,
+                   (post.title, post.content, post.published))
+    new_post = cursor.fetchall()#Saves the executed result in a variable, fetchall gets the result of the execute
+    conn.commit()# Saves changes to the actual database
+    return {"data": new_post}
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id: int):

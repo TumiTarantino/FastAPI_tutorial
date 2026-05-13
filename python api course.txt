@@ -164,4 +164,30 @@ For FastAPI specifically, it’s also good practice to eventually add:
 
 so others can install your dependencies with:
     pip install -r requirements.txt
-     
+
+DBMS- Database Management System
+Don't wanna work with database directly
+Popular DBMS
+Relational
+MYSQL, PostgresSQL, Oracle, SQL Server
+Non-relational
+MongoDB, DynamoDB, Oracle, SQL Server
+In the course, we will use Relational Databases exclusively, specifically PostgresSQL
+SQL is the language used to communciate with the DBMS
+
+A table has columns and rows
+Rows- represent different entries 
+Columns- represent diffent attributes
+
+Primary Key is a column or group of columns that uniquely identify each row in a table (Table can only have one)
+The 'ID' doesn't have to be the primary key, the email column could be the key too.
+A UNIQUE constraint can be added to a column to make sure that each entry is unique.
+A NOT NULL constraint can be added to make sure the column entries are never null.
+
+Around here we did SQL commands, I won't really type them here, butttt.....
+<> is the NOT operator
+LIKE checks for similar stuff and usually is used with Regex
+INSERT INTO products (name, price, inventory)
+VALUES ('Taco', 24, 3); if you want to more or less create a new entry into the products table
+We need to add a postgres driver for python:
+Psycopg is the driver we'll use to connect our (fastapi-> python -> Psycopg -> SQL database)
