@@ -191,3 +191,18 @@ INSERT INTO products (name, price, inventory)
 VALUES ('Taco', 24, 3); if you want to more or less create a new entry into the products table
 We need to add a postgres driver for python:
 Psycopg is the driver we'll use to connect our (fastapi-> python -> Psycopg -> SQL database)
+We did lots of SQL like avoiding SQL injections and what not but basically following Psycopg2 documentation
+
+ORM: Object Relational Mapper
+-Layer of abstraction that sits between database and us.
+-Perform all database operations through traditional python code, not SQL(sobs)
+-Apparently it's not neccessary, but useful as app gets larger
+Raw Sql still gives you more control
+What do ORMS do?
+-Instead of manually defining tables in postgres, we can define our tables as python models
+-Queries can be made exclusively through python code, no SQL is neccessary.
+SQLALCHEMY is the most popular python ORM, it is standalone and has no link with FastAPI and can be used on anything Python.
+We installed SQLALCHEMY v1.4 since v2.0 is very different
+SQLALCHEMY can't 'talk' to a database and thus needs a driver
+We are fine since we already installed umm, Psycopg2 as the driver.
+The FastAPI documents is showing importing SQLMODELS(new) but we'll use SQLALCHEMY(old)
