@@ -209,3 +209,4 @@ The FastAPI documents is showing importing SQLMODELS(new) but we'll use SQLALCHE
 Database URL: 'postgresql://<username>:<password>@<ip-address/hostname>/<database-name>'
 WE added this SQLALCHEMY stuff to a separate file called database.py
 Now we'll define models at models.py
+After defining the models, you need to connect the engine or something to the main.py
