@@ -5,14 +5,22 @@
 
 #This is what we'll use as we're following the tutorial
 from sqlalchemy import create_engine 
-from sqlalchemy.ext.declarative import declarative_base 
-from sqlalchemy.orm import sessionmaker
+#from sqlalchemy.ext.declarative import declarative_base 
+from sqlalchemy.orm import sessionmaker, declarative_base
 
-#This declaration is bad practice somehow(Maybe password?)
-SQLALCHEMY_DATABASE_URL = 'postgresql:postgres:tumitino@localhost/FastAPI'
+#This declaration is bad practice, needs environmental variables
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres:tumitino@localhost/FastAPI"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+#dependancy, import to main.py
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

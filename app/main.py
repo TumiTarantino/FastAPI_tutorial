@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Response, status
+from fastapi import FastAPI, HTTPException, Response, status, Depends
 #from fastapi.params import Body : works fine, but My Vscode is not happy
 from pydantic import BaseModel
 #the randrange is cause we have no database and have to assign an id
@@ -9,22 +9,18 @@ import time
 
 import psycopg2 # Database Driver
 from psycopg2.extras import RealDictCursor
+
+from . import models
+from sqlalchemy.orm import Session
+from .database import engine, get_db
+
+models.Base.metadata.create_all(bind=engine)  
+
 #Global variables
 app = FastAPI()
-#No database for now, luckily RAM exists
-my_posts = [{"title":"Somerandom Title", "content":"This post is not random", "id": 1}, 
-            {"title":"Not Random Title", "content":"This random is a post", "id": 2}]
 
-#temp functions
-def find_posts(id):
-    for p in my_posts:
-        if p['id'] == id:
-            return p
-        
-def find_index_post(id):
-    for i, p in enumerate(my_posts):
-        if p['id'] == id:
-            return i
+
+
         
 #----------------DATABASE STUFF---------------------------------------------------
 while True:#Tries untils connection is successful then breaks out of loop
@@ -57,6 +53,12 @@ class Post(BaseModel):
 @app.get("/")
 def root():
     return {"message": "Hello World"}
+
+@app.get("/sqll")
+def test_sql(db: Session= Depends(get_db)):
+    return {"Status":"success"}
+
+
 
 @app.get("/posts/{id}")
 def get_post(id: int,):
