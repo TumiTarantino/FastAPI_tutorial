@@ -1,7 +1,5 @@
-from multiprocessing import synchronize
-from typing import Optional
-
 from fastapi import FastAPI, HTTPException, Response, status, Depends
+from typing import List
 #from fastapi.params import Body : works fine, but My Vscode is not happy
 from pydantic import BaseModel
 #the randrange is cause we have no database and have to assign an id
@@ -11,7 +9,8 @@ import time
 import psycopg2 # Database Driver
 from psycopg2.extras import RealDictCursor
 
-from . import models
+
+from . import models, schemas
 from sqlalchemy.orm import Session
 from .database import engine, get_db
 
@@ -41,29 +40,14 @@ while True:#Tries untils connection is successful then breaks out of loop
 
 
 
-#defines how a post should look
-# Makes sure the value is a str and makes sure that title and content are explicitly used
-#FastAPI is noice
-#This class extends Pydantic's BaseModel and will thus be a Pydantic Model
-class Post(BaseModel):
-    title: str
-    content: str
-    published: bool = True
-    #rating: Optional[int] = None (Removed was only for testing)
+
 
 
 @app.get("/")
 def root():
     return {"message": "Hello World"}
 
-@app.get("/sqll")
-def test_sql(db: Session= Depends(get_db)):
-    temp = db.query(models.Post).all()
-    return {"Status":temp}
-
-
-
-@app.get("/posts/{id}")
+@app.get("/posts/{id}",response_model=schemas.Post)
 def get_post(id: int, db: Session= Depends(get_db)):
     #Commented because of ORM, don't delete
     #cursor.execute("""SELECT * FROM posts WHERE id = %s """,(id,))
@@ -72,9 +56,9 @@ def get_post(id: int, db: Session= Depends(get_db)):
     
     if not post:
         raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail=f"post with {id} is not found")
-    return {"data" : post}
+    return post
 
-@app.get("/posts")
+@app.get("/posts",response_model=List[schemas.Post])
 def get_posts(db: Session= Depends(get_db)):
     #Commented out since we are using ORMs now, don't delete
     #cursor.execute("""SELECT * FROM posts """)
@@ -82,10 +66,10 @@ def get_posts(db: Session= Depends(get_db)):
 
     #ORMS way
     posts = db.query(models.Post).all()
-    return {"data":posts}
+    return posts
 
-@app.post("/posts", status_code=status.HTTP_201_CREATED)
-def create_post(post:Post,db: Session= Depends(get_db)):
+@app.post("/posts", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
+def create_post(post:schemas.PostBase,db: Session= Depends(get_db)):
     #Try to sanitize the statement(NO SQL INJECTION PLZ)[Commented out because ORM, don't delete]
     #cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """,
     #                (post.title, post.content, post.published))
@@ -97,7 +81,7 @@ def create_post(post:Post,db: Session= Depends(get_db)):
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
-    return {"data": new_post}
+    return new_post
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id: int,db: Session= Depends(get_db)):
@@ -118,8 +102,8 @@ def delete_post(id: int,db: Session= Depends(get_db)):
     #Apparently if you delete data or 204 is the status code, you don't want to return anything
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@app.put("/posts/{id}")
-def update_post(id: int, updated_post: Post,db: Session= Depends(get_db)):
+@app.put("/posts/{id}",response_model=schemas.Post)
+def update_post(id: int, updated_post: schemas.PostBase,db: Session= Depends(get_db)):
     #Replaced with ORM, don't delete
     #cursor.execute("""UPDATE posts SET title= %s, content= %s, published= %s WHERE id = %s RETURNING * """,
     #              (post.title, post.content, post.published, id,))
@@ -135,4 +119,4 @@ def update_post(id: int, updated_post: Post,db: Session= Depends(get_db)):
     post_query.update(updated_post.dict(), synchronize_session=False)
     db.commit()
     
-    return{"data": post_query.first()}
+    return post_query.first()

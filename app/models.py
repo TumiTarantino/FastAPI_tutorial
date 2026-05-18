@@ -15,4 +15,11 @@ class Post(Base): #Extends the Base declared in the database file.
     content = Column(String, nullable=False)
     published = Column(Boolean, server_default='TRUE', nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()')) 
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(String, primary_key=True, nullable=False)
+    email = Column(String, unique=True, nullable=False)
+    password = Column(String, nullable=False)
     
