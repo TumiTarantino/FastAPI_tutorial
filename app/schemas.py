@@ -1,6 +1,6 @@
 from sys import int_info
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
 #Defines how a post should look
@@ -23,3 +23,16 @@ class Post(PostBase):
     created_at: datetime
     class Config:
         orm_mode = True
+
+#Schema when a user is created
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+
+#Reponse Schema for users
+class UserOut(BaseModel):
+    id: int
+    email: EmailStr
+    class Config:
+        orm_mode = True
+
