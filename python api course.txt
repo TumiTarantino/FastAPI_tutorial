@@ -213,3 +213,5 @@ After defining the models, you need to connect the engine or something to the ma
 
 Schemas.py:
 Here we created a base pydantic post model and have extended it with multiple types of CRUDs.
+Um did a lot, honestly forgot but, should more or less be documented with comments and git commit messages, I hope.
+We added some user routes in the main.py and now it's a bit cluttered, so we need to use something called routers.
