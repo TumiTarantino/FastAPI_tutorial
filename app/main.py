@@ -1,19 +1,23 @@
+from warnings import deprecated
+
 from fastapi import FastAPI, HTTPException, Response, status, Depends
 from typing import List
 #from fastapi.params import Body : works fine, but My Vscode is not happy
 from pydantic import BaseModel
 #the randrange is cause we have no database and have to assign an id
 from random import randrange
+from passlib.context import CryptContext
+import bcrypt
 import time
-
 import psycopg2 # Database Driver
 from psycopg2.extras import RealDictCursor
-
-
 from . import models, schemas
 from sqlalchemy.orm import Session
 from .database import engine, get_db
 
+#Hashing Algo
+pwd_context = CryptContext(schemes=[bcrypt], deprecated="auto")
+#Creates tables base on defined schema in models
 models.Base.metadata.create_all(bind=engine)  # type: ignore
 
 #Global variables
@@ -123,6 +127,10 @@ def update_post(id: int, updated_post: schemas.PostBase,db: Session= Depends(get
 
 @app.post("/users", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
 def create_user(user: schemas.UserCreate, db: Session= Depends(get_db)):
+
+    #Hash User's password
+    hashed_password = pwd_context.hash(user.password)
+    user.password = hashed_password
     new_user = models.User(**user.dict())#use post.model_dump after tutorial
  #Um, an exception or something needs to happen if the email is already in use
  #At the moment, an Internal Server Error happens, which is oof
