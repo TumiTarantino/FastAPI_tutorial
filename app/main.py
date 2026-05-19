@@ -7,7 +7,6 @@ from pydantic import BaseModel
 #the randrange is cause we have no database and have to assign an id
 from random import randrange
 from passlib.context import CryptContext
-import bcrypt
 import time
 import psycopg2 # Database Driver
 from psycopg2.extras import RealDictCursor
@@ -16,7 +15,7 @@ from sqlalchemy.orm import Session
 from .database import engine, get_db
 
 #Hashing Algo
-pwd_context = CryptContext(schemes=[bcrypt], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 #Creates tables base on defined schema in models
 models.Base.metadata.create_all(bind=engine)  # type: ignore
 
@@ -131,6 +130,7 @@ def create_user(user: schemas.UserCreate, db: Session= Depends(get_db)):
     #Hash User's password
     hashed_password = pwd_context.hash(user.password)
     user.password = hashed_password
+
     new_user = models.User(**user.dict())#use post.model_dump after tutorial
  #Um, an exception or something needs to happen if the email is already in use
  #At the moment, an Internal Server Error happens, which is oof
