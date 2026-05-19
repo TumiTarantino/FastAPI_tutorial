@@ -5,9 +5,12 @@ from ..database import get_db
 # One route uses this, maybe there's a better way?
 from typing import List
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/posts",
+    tags=['Posts']
+)
 
-@router.get("/posts/{id}",response_model=schemas.Post)
+@router.get("/{id}",response_model=schemas.Post)
 def get_post(id: int, db: Session= Depends(get_db)):
     #Commented because of ORM, don't delete
     #cursor.execute("""SELECT * FROM posts WHERE id = %s """,(id,))
@@ -18,7 +21,7 @@ def get_post(id: int, db: Session= Depends(get_db)):
         raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail=f"post with {id} is not found")
     return post
 
-@router.get("/posts",response_model=List[schemas.Post])
+@router.get("/",response_model=List[schemas.Post])
 def get_posts(db: Session= Depends(get_db)):
     #Commented out since we are using ORMs now, don't delete
     #cursor.execute("""SELECT * FROM posts """)
@@ -28,7 +31,7 @@ def get_posts(db: Session= Depends(get_db)):
     posts = db.query(models.Post).all()
     return posts
 
-@router.post("/posts", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
 def create_post(post:schemas.PostBase,db: Session= Depends(get_db)):
     #Try to sanitize the statement(NO SQL INJECTION PLZ)[Commented out because ORM, don't delete]
     #cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """,
@@ -43,7 +46,7 @@ def create_post(post:schemas.PostBase,db: Session= Depends(get_db)):
     db.refresh(new_post)
     return new_post
 
-@router.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id: int,db: Session= Depends(get_db)):
     #Replaced with ORM logic, don't delete
     #cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING * """,(id,))
@@ -62,7 +65,7 @@ def delete_post(id: int,db: Session= Depends(get_db)):
     #Apparently if you delete data or 204 is the status code, you don't want to return anything
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@router.put("/posts/{id}",response_model=schemas.Post)
+@router.put("/{id}",response_model=schemas.Post)
 def update_post(id: int, updated_post: schemas.PostBase,db: Session= Depends(get_db)):
     #Replaced with ORM, don't delete
     #cursor.execute("""UPDATE posts SET title= %s, content= %s, published= %s WHERE id = %s RETURNING * """,
