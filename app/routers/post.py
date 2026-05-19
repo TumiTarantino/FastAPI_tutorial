@@ -1,0 +1,82 @@
+from .. import models, schemas, utils
+from fastapi import FastAPI, HTTPException, Response, status, Depends, APIRouter
+from sqlalchemy.orm import Session
+from ..database import get_db
+# One route uses this, maybe there's a better way?
+from typing import List
+
+router = APIRouter()
+
+@router.get("/posts/{id}",response_model=schemas.Post)
+def get_post(id: int, db: Session= Depends(get_db)):
+    #Commented because of ORM, don't delete
+    #cursor.execute("""SELECT * FROM posts WHERE id = %s """,(id,))
+    #post = cursor.fetchone()
+    post = db.query(models.Post).filter(models.Post.id == id).first() #type: ignore
+    
+    if not post:
+        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail=f"post with {id} is not found")
+    return post
+
+@router.get("/posts",response_model=List[schemas.Post])
+def get_posts(db: Session= Depends(get_db)):
+    #Commented out since we are using ORMs now, don't delete
+    #cursor.execute("""SELECT * FROM posts """)
+    #posts = cursor.fetchall()
+
+    #ORMS way
+    posts = db.query(models.Post).all()
+    return posts
+
+@router.post("/posts", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
+def create_post(post:schemas.PostBase,db: Session= Depends(get_db)):
+    #Try to sanitize the statement(NO SQL INJECTION PLZ)[Commented out because ORM, don't delete]
+    #cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """,
+    #                (post.title, post.content, post.published))
+    #new_post = cursor.fetchone()#Saves the executed result in a variable, fetchall gets the result of the execute
+    #conn.commit()# Saves changes to the actual database
+
+    #ORM way:
+    new_post = models.Post(**post.dict())#use post.model_dump after tutorial
+    db.add(new_post)
+    db.commit()
+    db.refresh(new_post)
+    return new_post
+
+@router.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_post(id: int,db: Session= Depends(get_db)):
+    #Replaced with ORM logic, don't delete
+    #cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING * """,(id,))
+    #deleted_post = cursor.fetchone()
+    #conn.commit() (put after the exception check but it commented out now)
+    post = db.query(models.Post).filter(models.Post.id == id).first() #type: ignore
+
+    if post is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"post with id: {id} does not exist"
+        )
+    #post.delete(synchronize_session=False)
+    db.delete(post)
+    db.commit()
+    #Apparently if you delete data or 204 is the status code, you don't want to return anything
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+@router.put("/posts/{id}",response_model=schemas.Post)
+def update_post(id: int, updated_post: schemas.PostBase,db: Session= Depends(get_db)):
+    #Replaced with ORM, don't delete
+    #cursor.execute("""UPDATE posts SET title= %s, content= %s, published= %s WHERE id = %s RETURNING * """,
+    #              (post.title, post.content, post.published, id,))
+    #updated_post = cursor.fetchone()
+    #conn.commit()
+    post_query = db.query(models.Post).filter(models.Post.id == id)#type: ignore
+    post = post_query.first()
+    if post is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"post with id: {id} does not exist"
+        )
+    post_query.update(updated_post.dict(), synchronize_session=False)
+    db.commit()
+    
+    return post_query.first()
