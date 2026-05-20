@@ -11,7 +11,7 @@ from . import models, schemas, utils
 from sqlalchemy.orm import Session
 from .database import engine, get_db
 #And this is when it all changed...
-from .routers import post, user
+from .routers import post, user, auth
 
 
 #Creates tables base on defined schema in models
@@ -46,6 +46,7 @@ while True:#Tries untils connection is successful then breaks out of loop
 #C'mon manye
 app.include_router(post.router)
 app.include_router(user.router)
+app.include_router(auth.router)
 
 @app.get("/")
 def root():

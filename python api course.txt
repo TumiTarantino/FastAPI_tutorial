@@ -215,3 +215,23 @@ Schemas.py:
 Here we created a base pydantic post model and have extended it with multiple types of CRUDs.
 Um did a lot, honestly forgot but, should more or less be documented with comments and git commit messages, I hope.
 We added some user routes in the main.py and now it's a bit cluttered, so we need to use something called routers.
+Now we are doing JWT Token Authentication
+JWT is stateless, the tokens look encrypted, but they are NOT encrypted.
+JWT gets attached to the client after the send their identification credentials.
+Anytime a client with a token sends a request, they are authenticated, the backend remembers not.
+JWT structure: 'Example'
+Header: 'Algorithm and token type'
+{
+    "alg":"HS256",
+    "typ":"JWT"
+}
+Payload: 'Data'
+{
+    "sub":"123434"
+    "name":"John Doe"
+    "iat:"8484343"
+}
+Verify Signature:
+Random stuff, some base64, etc
+Anyway it doesn't really look like this irl, but this is more ir less its structure.
+
