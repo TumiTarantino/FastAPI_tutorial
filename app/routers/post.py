@@ -1,4 +1,4 @@
-from .. import models, schemas, utils
+from .. import models, schemas, utils, oauth2
 from fastapi import FastAPI, HTTPException, Response, status, Depends, APIRouter
 from sqlalchemy.orm import Session
 from ..database import get_db
@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 @router.get("/{id}",response_model=schemas.Post)
-def get_post(id: int, db: Session= Depends(get_db)):
+def get_post(id: int, db: Session= Depends(get_db), user_id: int = Depends(oauth2.get_current_user)):
     #Commented because of ORM, don't delete
     #cursor.execute("""SELECT * FROM posts WHERE id = %s """,(id,))
     #post = cursor.fetchone()
@@ -22,7 +22,7 @@ def get_post(id: int, db: Session= Depends(get_db)):
     return post
 
 @router.get("/",response_model=List[schemas.Post])
-def get_posts(db: Session= Depends(get_db)):
+def get_posts(db: Session= Depends(get_db), user_id: int = Depends(oauth2.get_current_user)):
     #Commented out since we are using ORMs now, don't delete
     #cursor.execute("""SELECT * FROM posts """)
     #posts = cursor.fetchall()
@@ -31,13 +31,17 @@ def get_posts(db: Session= Depends(get_db)):
     posts = db.query(models.Post).all()
     return posts
 
+#Added Oauth2 stuff to verify user
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
-def create_post(post:schemas.PostBase,db: Session= Depends(get_db)):
+def create_post(post:schemas.PostBase,db: Session= Depends(get_db), user_id: int = Depends(oauth2.get_current_user)):
     #Try to sanitize the statement(NO SQL INJECTION PLZ)[Commented out because ORM, don't delete]
     #cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """,
     #                (post.title, post.content, post.published))
     #new_post = cursor.fetchone()#Saves the executed result in a variable, fetchall gets the result of the execute
     #conn.commit()# Saves changes to the actual database
+
+    #temp checks
+    print(user_id)
 
     #ORM way:
     new_post = models.Post(**post.dict())#use post.model_dump after tutorial
@@ -47,7 +51,7 @@ def create_post(post:schemas.PostBase,db: Session= Depends(get_db)):
     return new_post
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(id: int,db: Session= Depends(get_db)):
+def delete_post(id: int,db: Session= Depends(get_db), user_id: int = Depends(oauth2.get_current_user)):
     #Replaced with ORM logic, don't delete
     #cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING * """,(id,))
     #deleted_post = cursor.fetchone()
@@ -66,7 +70,7 @@ def delete_post(id: int,db: Session= Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @router.put("/{id}",response_model=schemas.Post)
-def update_post(id: int, updated_post: schemas.PostBase,db: Session= Depends(get_db)):
+def update_post(id: int, updated_post: schemas.PostBase,db: Session= Depends(get_db), user_id: int = Depends(oauth2.get_current_user)):
     #Replaced with ORM, don't delete
     #cursor.execute("""UPDATE posts SET title= %s, content= %s, published= %s WHERE id = %s RETURNING * """,
     #              (post.title, post.content, post.published, id,))
