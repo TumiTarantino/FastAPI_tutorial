@@ -8,7 +8,7 @@ router = APIRouter(
     tags=['Authentication']
 )
 
-@router.post("/")
+@router.post("/", response_model=schemas.Token)
 def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
     #Notes on this function:
     #if the hashed_password parameter is not a hash, there will be a internal server error,
