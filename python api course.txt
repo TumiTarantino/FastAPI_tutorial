@@ -233,5 +233,7 @@ Payload: 'Data'
 }
 Verify Signature:
 Random stuff, some base64, etc
-Anyway it doesn't really look like this irl, but this is more ir less its structure.
+Anyway it doesn't really look like this irl, but this is more or less its structure.
+
+Foreign Key data type needs to match whatever the primary key's is.
 
