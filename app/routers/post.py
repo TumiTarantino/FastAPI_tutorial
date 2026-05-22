@@ -41,10 +41,10 @@ def create_post(post:schemas.PostBase,db: Session= Depends(get_db), user_id: int
     #conn.commit()# Saves changes to the actual database
 
     #temp checks
-    print(user_id.email)# type: ignore pylance issue but probably because of schemas.py tokendata or something related
+    # type: ignore pylance issue but probably because of schemas.py tokendata or something related
 
     #ORM way:
-    new_post = models.Post(**post.dict())#use post.model_dump after tutorial
+    new_post = models.Post(owner_id=user_id.id,**post.dict())#use post.model_dump after tutorial #type: ignore
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
