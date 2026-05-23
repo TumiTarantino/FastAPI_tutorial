@@ -43,7 +43,7 @@ while True:#Tries untils connection is successful then breaks out of loop
 
 
 
-#C'mon manye
+#App routers
 app.include_router(post.router)
 app.include_router(user.router)
 app.include_router(auth.router)
