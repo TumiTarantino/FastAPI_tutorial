@@ -33,7 +33,7 @@ def get_posts(db: Session= Depends(get_db), user_id: int = Depends(oauth2.get_cu
 
 #Added Oauth2 stuff to verify user
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
-def create_post(post:schemas.PostBase,db: Session= Depends(get_db), user_id: int = Depends(oauth2.get_current_user)):
+def create_post(post:schemas.PostBase,db: Session= Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     #Try to sanitize the statement(NO SQL INJECTION PLZ)[Commented out because ORM, don't delete]
     #cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """,
     #                (post.title, post.content, post.published))
@@ -44,14 +44,14 @@ def create_post(post:schemas.PostBase,db: Session= Depends(get_db), user_id: int
     # type: ignore pylance issue but probably because of schemas.py tokendata or something related
 
     #ORM way:
-    new_post = models.Post(owner_id=user_id.id,**post.dict())#use post.model_dump after tutorial #type: ignore
+    new_post = models.Post(owner_id=current_user.id,**post.dict())#use post.model_dump after tutorial #type: ignore
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
     return new_post
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(id: int,db: Session= Depends(get_db), user_id: int = Depends(oauth2.get_current_user)):
+def delete_post(id: int,db: Session= Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     #Replaced with ORM logic, don't delete
     #cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING * """,(id,))
     #deleted_post = cursor.fetchone()
@@ -62,6 +62,11 @@ def delete_post(id: int,db: Session= Depends(get_db), user_id: int = Depends(oau
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"post with id: {id} does not exist"
+        )
+    if post.owner_id != current_user:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Not authorized to perform requested action"
         )
     #post.delete(synchronize_session=False)
     db.delete(post)
