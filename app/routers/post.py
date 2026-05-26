@@ -1,5 +1,5 @@
 from .. import models, schemas, utils, oauth2
-from fastapi import FastAPI, HTTPException, Response, status, Depends, APIRouter
+from fastapi import HTTPException, Response, status, Depends, APIRouter
 from sqlalchemy.orm import Session
 from ..database import get_db
 # One route uses this, maybe there's a better way?
@@ -16,19 +16,19 @@ def get_post(id: int, db: Session= Depends(get_db), user_id: int = Depends(oauth
     #cursor.execute("""SELECT * FROM posts WHERE id = %s """,(id,))
     #post = cursor.fetchone()
     post = db.query(models.Post).filter(models.Post.id == id).first() #type: ignore
-    
+
     if not post:
         raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail=f"post with {id} is not found")
     return post
 
 @router.get("/",response_model=List[schemas.Post])
-def get_posts(db: Session= Depends(get_db), user_id: int = Depends(oauth2.get_current_user)):
+def get_posts(db: Session= Depends(get_db), current_user: int = Depends(oauth2.get_current_user), limit: int = 10):
     #Commented out since we are using ORMs now, don't delete
     #cursor.execute("""SELECT * FROM posts """)
     #posts = cursor.fetchall()
 
     #ORMS way
-    posts = db.query(models.Post).all()
+    posts = db.query(models.Post).limit(limit).all() #type: ignore
     return posts
 
 #Added Oauth2 stuff to verify user

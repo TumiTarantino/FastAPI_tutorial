@@ -3,6 +3,7 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
+
 #Defines how a post should look
 #Makes sure the value is a str and makes sure that title and content are explicitly used
 #FastAPI is noice
@@ -23,6 +24,7 @@ class Post(PostBase):
     id: int
     created_at: datetime
     owner_id: int
+    owner: UserOut
     class Config:
         orm_mode = True
 

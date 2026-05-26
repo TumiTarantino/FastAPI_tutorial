@@ -30,5 +30,4 @@ def get_user(id: int, db: Session=Depends(get_db)):
     # is it possible to differ between a not found and an id not typed?
     if not user:
         raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail=f"user with {id} is not found")
-    
     return user
