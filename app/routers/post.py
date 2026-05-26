@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 @router.get("/{id}",response_model=schemas.Post)
-def get_post(id: int, db: Session= Depends(get_db), user_id: int = Depends(oauth2.get_current_user)):
+def get_post(id: int, db: Session= Depends(get_db), user_id: models.User = Depends(oauth2.get_current_user)):
     #Commented because of ORM, don't delete
     #cursor.execute("""SELECT * FROM posts WHERE id = %s """,(id,))
     #post = cursor.fetchone()
@@ -22,7 +22,7 @@ def get_post(id: int, db: Session= Depends(get_db), user_id: int = Depends(oauth
     return post
 
 @router.get("/",response_model=List[schemas.Post])
-def get_posts(db: Session= Depends(get_db), current_user: int = Depends(oauth2.get_current_user), limit: int = 10,
+def get_posts(db: Session= Depends(get_db), current_user: models.User = Depends(oauth2.get_current_user), limit: int = 10,
               skip: int = 0, search: Optional[str]=""):
     #Commented out since we are using ORMs now, don't delete
     #cursor.execute("""SELECT * FROM posts """)
@@ -34,7 +34,7 @@ def get_posts(db: Session= Depends(get_db), current_user: int = Depends(oauth2.g
 
 #Added Oauth2 stuff to verify user
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
-def create_post(post:schemas.PostBase,db: Session= Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+def create_post(post:schemas.PostBase,db: Session= Depends(get_db), current_user: models.User = Depends(oauth2.get_current_user)):
     #Try to sanitize the statement(NO SQL INJECTION PLZ)[Commented out because ORM, don't delete]
     #cursor.execute("""INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """,
     #                (post.title, post.content, post.published))
