@@ -3,7 +3,7 @@ from fastapi import HTTPException, Response, status, Depends, APIRouter
 from sqlalchemy.orm import Session
 from ..database import get_db
 # One route uses this, maybe there's a better way?
-from typing import List
+from typing import List, Optional
 
 router = APIRouter(
     prefix="/posts",
@@ -22,13 +22,14 @@ def get_post(id: int, db: Session= Depends(get_db), user_id: int = Depends(oauth
     return post
 
 @router.get("/",response_model=List[schemas.Post])
-def get_posts(db: Session= Depends(get_db), current_user: int = Depends(oauth2.get_current_user), limit: int = 10):
+def get_posts(db: Session= Depends(get_db), current_user: int = Depends(oauth2.get_current_user), limit: int = 10,
+              skip: int = 0, search: Optional[str]=""):
     #Commented out since we are using ORMs now, don't delete
     #cursor.execute("""SELECT * FROM posts """)
     #posts = cursor.fetchall()
 
     #ORMS way
-    posts = db.query(models.Post).limit(limit).all() #type: ignore
+    posts = db.query(models.Post).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all() #type: ignore
     return posts
 
 #Added Oauth2 stuff to verify user
