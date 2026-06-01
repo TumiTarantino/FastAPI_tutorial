@@ -1,7 +1,8 @@
 from sys import int_info
-from typing import Optional
-from pydantic import BaseModel, EmailStr
+from typing import Annotated, Optional
+from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
+
 
 
 #Defines how a post should look
@@ -51,3 +52,7 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     #id: Optional[str] = None tutorial version
     id: Optional[int] = None
+
+class Vote(BaseModel):
+    post_id: int
+    vote_dir: Annotated[int, Field(le=1)]
