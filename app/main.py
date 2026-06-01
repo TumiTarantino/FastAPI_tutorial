@@ -1,9 +1,12 @@
 from fastapi import FastAPI
+
+from app.oauth2 import SECRET_KEY
 #the randrange is cause we have no database and have to assign an id
 #from random import randrange --goodtimes
 from . import models
 from .database import engine
 from .routers import post, user, auth
+from .config import settings
 
 
 #Creates tables base on defined schema in models
