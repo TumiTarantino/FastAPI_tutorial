@@ -236,6 +236,13 @@ Random stuff, some base64, etc
 Anyway it doesn't really look like this irl, but this is more or less its structure.
 
 Foreign Key data type needs to match whatever the primary key's is.
-Did somestuff, honestly at this point we are touch env variables, and still need to do alembic and docker, so yeah.
+Did somestuff, honestly at this point we are touching env variables, and still need to do alembic and docker, so yeah.
+ENV variables need to be set properly, if they are not there they can break an app
+You can use Pydantic's basesettings import for validation
 
+Voting System/Likes
+-Users should be able to like a post
+-Should only be able to like a post once
+-Retrieving posts should also fetch the total number of likes
+In a database to ensure uniqueness a composite key can be used
 

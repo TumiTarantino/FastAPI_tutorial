@@ -11,7 +11,8 @@ class Settings(BaseSettings):
     algorithm: str
     access_token_expire_minutes: int
 
+    #a bit old, there is newer way, read documentation
     class Config:
         env_file = ".env"
 
-settings = Settings() # type: ignore
+settings: Settings = Settings() # type: ignore
