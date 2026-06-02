@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 @router.get("/{id}",response_model=schemas.Post)
-def get_post(id: int, db: Session= Depends(get_db), user_id: models.User = Depends(oauth2.get_current_user)):
+def get_post(id: int, db: Session= Depends(get_db), current_user: models.User = Depends(oauth2.get_current_user)):
     #Commented because of ORM, don't delete
     #cursor.execute("""SELECT * FROM posts WHERE id = %s """,(id,))
     #post = cursor.fetchone()
