@@ -1,5 +1,3 @@
-from multiprocessing import synchronize
-
 from fastapi import FastAPI, HTTPException, Response, status, Depends, APIRouter
 from sqlalchemy.orm import Session
 from .. import schemas, database, oauth2, models
@@ -12,7 +10,7 @@ router = APIRouter(
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def vote(vote: schemas.Vote, db: Session = Depends(database.get_db), current_user: models.User = Depends(oauth2.get_current_user)):
 
-    post = db.query(models.Post).filter(models.Post.id == vote.post_id).first()
+    post = db.query(models.Post).filter(models.Post.id == vote.post_id).first() #type:ignore 
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
     

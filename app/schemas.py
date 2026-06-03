@@ -28,6 +28,12 @@ class Post(PostBase):
     owner: UserOut
     class Config:
         orm_mode = True
+    
+class PostOut(BaseModel):
+    post: Post
+    votes: int
+    class Config:
+        orm_mode = True
 
 #Schema when a user is created
 class UserCreate(BaseModel):

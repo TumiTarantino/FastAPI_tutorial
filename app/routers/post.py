@@ -1,6 +1,7 @@
 from .. import models, schemas, utils, oauth2
 from fastapi import HTTPException, Response, status, Depends, APIRouter
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from ..database import get_db
 # One route uses this, maybe there's a better way?
 from typing import List, Optional
@@ -10,27 +11,43 @@ router = APIRouter(
     tags=['Posts']
 )
 
-@router.get("/{id}",response_model=schemas.Post)
+@router.get("/{id}")#,response_model=schemas.PostOut)
 def get_post(id: int, db: Session= Depends(get_db), current_user: models.User = Depends(oauth2.get_current_user)):
     #Commented because of ORM, don't delete
     #cursor.execute("""SELECT * FROM posts WHERE id = %s """,(id,))
     #post = cursor.fetchone()
-    post = db.query(models.Post).filter(models.Post.id == id).first() #type: ignore
+    #post = db.query(models.Post).filter(models.Post.id == id).first() #type: ignore
+    postt = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).filter(models.Post.id == id).first() #type: ignore
 
-    if not post:
+    if not postt:
         raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail=f"post with {id} is not found")
-    return post
+    #return post
+    post, votes = postt
 
-@router.get("/",response_model=List[schemas.Post])
+    return {
+        "post": post,
+        "votes": votes
+    }
+#@router.get("/",response_model=List[schemas.Post])
+@router.get("/",response_model=List[schemas.PostOut])
 def get_posts(db: Session= Depends(get_db), current_user: models.User = Depends(oauth2.get_current_user), limit: int = 10,
               skip: int = 0, search: Optional[str]=""):
     #Commented out since we are using ORMs now, don't delete
     #cursor.execute("""SELECT * FROM posts """)
     #posts = cursor.fetchall()
 
-    #ORMS way
-    posts = db.query(models.Post).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all() #type: ignore
-    return posts
+    #ORMS way, comment old posts variable, keeping for reference
+    #posts = db.query(models.Post).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all() #type: ignore
+
+    posts = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()#type: ignore
+
+    return [
+    {
+        "post": post,
+        "votes": votes
+    }
+    for post, votes in posts
+]
 
 #Added Oauth2 stuff to verify user
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
