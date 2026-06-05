@@ -23,7 +23,9 @@ def get_post(id: int, db: Session= Depends(get_db), current_user: models.User = 
         raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail=f"post with {id} is not found")
     #return post
     post, votes = postt
-
+    print(type(postt))
+    print(type(postt[0]))
+    print(type(postt[1]))
     return {
         "post": post,
         "votes": votes

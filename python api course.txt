@@ -246,3 +246,11 @@ Voting System/Likes
 -Retrieving posts should also fetch the total number of likes
 In a database to ensure uniqueness a composite key can be used
 
+My note taking is kinda mid here, mostly i guess because i usually just leave comments on the code itself and i find it redundant to restate most of the stuff here.
+I guess this is more or less a high level overview of what is gonna happen.
+The next thing to tackle is database migarations with alembic
+
+Alembic: Database migarations
+Works like Git basically and also allows for changes made to database, to be reflected properly rather than needing to drop a table for SQLALCHEMY to update/recreate it. 
+
+
