@@ -1,6 +1,5 @@
 from fastapi import FastAPI
-
-from app.oauth2 import SECRET_KEY
+from fastapi.middleware.cors import CORSMiddleware
 #the randrange is cause we have no database and have to assign an id
 #from random import randrange --goodtimes
 from . import models
@@ -17,6 +16,17 @@ from .config import settings
 #Global variables
 app = FastAPI()
 
+#Allows domains to get access to API via CORS
+origins = ["https://www.google.com"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 #App routers
 app.include_router(post.router)
 app.include_router(user.router)
@@ -25,7 +35,7 @@ app.include_router(vote.router)
 
 @app.get("/")
 def root():
-    return {"message": "Television, you turn me on!"}
+    return {"message": "Kea is not dumb, maybe?"}
 
 
 

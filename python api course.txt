@@ -251,6 +251,12 @@ I guess this is more or less a high level overview of what is gonna happen.
 The next thing to tackle is database migarations with alembic
 
 Alembic: Database migarations
-Works like Git basically and also allows for changes made to database, to be reflected properly rather than needing to drop a table for SQLALCHEMY to update/recreate it. 
+Works like Git basically and also allows for changes made to database, to be reflected properly rather than needing to drop a table for SQLALCHEMY to update/recreate it.
+Done with Alembic, pretty cool, just remember to make new revisions instead of modifing old revisions as they won't be read and can to databases not being the same, which defeats the purpose
+Now we are doing CORS, postman can send requests, but chrome can't we will find out why 
+
+CORS: Cross Origin Resource Sharing
+It allows you to make requests from a web browser on one domain to a server on a different domain
+By default our API will only accept web browsers on the same domain as our server to make requests to it
 
 
