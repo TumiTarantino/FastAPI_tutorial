@@ -9,8 +9,10 @@ from .routers import post, user, auth, vote
 from .config import settings
 
 
-#Creates tables base on defined schema in models
-models.Base.metadata.create_all(bind=engine)  # type: ignore
+#Creates tables base on defined schema in models at the start of the application
+#If tables exist, no changes will be checked
+# Commented out as is deprecated, alembic will handle stuff now 
+#models.Base.metadata.create_all(bind=engine)  # type: ignore
 
 #Global variables
 app = FastAPI()
@@ -23,7 +25,7 @@ app.include_router(vote.router)
 
 @app.get("/")
 def root():
-    return {"message": "Hello World"}
+    return {"message": "Television, you turn me on!"}
 
 
 
