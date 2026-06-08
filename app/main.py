@@ -16,6 +16,19 @@ from .config import settings
 #Global variables
 app = FastAPI()
 
+#Not recommended, but free plan is limiting
+#----------------------Start
+import subprocess
+import os
+
+app = FastAPI()
+
+@app.on_event("startup")
+def run_migrations():
+    subprocess.run(["alembic", "upgrade", "head"], check=True)
+
+#----------------------END
+
 #Allows domains to get access to API via CORS
 origins = ["https://www.google.com"]
 
