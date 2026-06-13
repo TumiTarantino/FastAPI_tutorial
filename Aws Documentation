@@ -1,0 +1,70 @@
+🚀 EC2 Instance Setup Documentation (Ubuntu)
+📌 Overview
+
+This document describes the setup of an AWS EC2 Ubuntu instance, including creation, SSH access, and initial system updates.
+
+🧱 1. EC2 Instance Creation (AWS Console / ClickOps)
+
+The instance was created using the AWS Management Console (ClickOps method):
+
+Configuration:
+AMI (Operating System): Ubuntu Server (LTS version)
+Instance Type: (e.g. t2.micro / t3.micro)
+Key Pair: Existing/new .pem key pair generated via AWS
+Network Settings:
+SSH (port 22) enabled in Security Group
+Storage: Default EBS volume (gp2/gp3 depending on selection)
+Result:
+
+A running EC2 instance with a public IPv4 address was provisioned.
+
+🔐 2. SSH Access Setup
+
+The instance was accessed via SSH using a PEM key pair.
+
+Command used:
+ssh -i path/to/key.pem ubuntu@<EC2-PUBLIC-IP>
+Notes:
+Default login user for Ubuntu EC2 instances is ubuntu
+The .pem file must have restricted permissions:
+chmod 400 key.pem
+🖥️ 3. Initial Login
+
+After successful authentication:
+
+Connection established to EC2 instance via SSH
+User confirmed as:
+whoami
+# ubuntu
+🔄 4. System Update & Upgrade
+
+The system packages were updated to ensure security patches and latest package versions were installed.
+
+Commands executed:
+sudo apt update
+sudo apt upgrade -y
+Purpose:
+apt update → refresh package index from repositories
+apt upgrade → install latest versions of installed packages
+Outcome:
+System packages were upgraded to latest stable versions
+Security patches applied
+Base system brought up to date
+🧠 Key Notes / Learnings
+EC2 Ubuntu instances do not require root login by default
+Administrative tasks are performed using sudo
+SSH access is controlled via key pairs, not passwords
+Security Groups act as the primary firewall for inbound traffic
+Updating packages is a standard first step after provisioning any server
+
+Installed pip3 and used pip3 to install virtualenv(tried to but ec2 ubuntu blocked it and said to use apt install python3-venv)
+Installed venv via the above command
+Installed psql, postgres im assuming
+Ran into peer authentication error which is basically the postgres user and current linux user not being the same
+Just change your current user into postgres to fix it(sudo -i -u postgres)
+Created a password for the postgres user (Password123)
+Changed postgresql.conf file to allow listening from anywhere and everywhere(Kinda exposed ngl)
+
+Changed pg_hba.conf, now local connections from the postgres user are md5(passwords) and not peer authed and changed ipv4 and v6 to allow ::/0 
+
+When changing config files, applications that use them need to be restarted for changes to take effect

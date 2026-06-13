@@ -258,5 +258,15 @@ Now we are doing CORS, postman can send requests, but chrome can't we will find 
 CORS: Cross Origin Resource Sharing
 It allows you to make requests from a web browser on one domain to a server on a different domain
 By default our API will only accept web browsers on the same domain as our server to make requests to it
+Quite short actually, now we are dealing with Git
+
+Git:
+used it great
+
+Deployment:
+Was supposed to use heroku, but instead used render as it has a free tier.
+The code had to be changed to support alembic migarations and env variables and other small Deployment issues
+
+now we are doing ubuntu Deployment and im gonna use AWS
 
 
