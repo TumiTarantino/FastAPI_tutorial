@@ -268,5 +268,36 @@ Was supposed to use heroku, but instead used render as it has a free tier.
 The code had to be changed to support alembic migarations and env variables and other small Deployment issues
 
 now we are doing ubuntu Deployment and im gonna use AWS
+In AWS, I made an Ec2 instance of Ubuntu, i updated and upgraded the instance, i installed pip, venv and postgres
+I modified the Postgres config files to allow for something...?
+In the course it's advised to not gallop through the instance as root(duh) but to create a user with sudo priviledges
+But i didn't since there is already a user called 'ubuntu' which serves that role.
 
+Installing my api on the instance:
+Created a venv and a app/src directory
+installed neccessary packages using requirements.txt (foreshadowing?)
+Installed the packages on the venv and not the system since it has some built-in behavior that doesn't allow for that
+Tried running the app,but it seems that we have no environment variables set
+Created an .env and used to "set -o allexport; source /home/ubuntu/.env; set +o allexport" to set them from a 'regular file'
+Since the env variables don't persist past a reboot, the .profile file has been modified to include 'set -o allexport; source /home/ubuntu/.env; set +o allexport' upon start
+The env file is at the home directory, because the instructor wants 0% chance of prod env files going unto git
+Now the env is fine and working, kinda? I changed the code when deploying to render so this may be a hassle, but ill just have to change the code once more for aws deployments
+Okay, i changed the code to work with the ec2 instance and now the alembic runs fine
+For Production servers; changes to the code should really not be happening, therefore there is no need to use the --reload here
+uvicorn --host 0.0.0.0 app.main:app should be fine
+The api works, yay! However if it reboots or something it will not automatically run the uvicorn server, so we use gunicorn
+"gunicorn -w 1 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:8000
 
+Why not just use Uvicorn?
+
+Uvicorn alone:
+
+✔ good for development
+❌ not great for production scaling
+❌ no process management
+
+Gunicorn adds:
+
+✔ multiple workers
+✔ crash recovery
+✔ better concurrency control
