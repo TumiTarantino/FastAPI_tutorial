@@ -68,3 +68,5 @@ Changed postgresql.conf file to allow listening from anywhere and everywhere(Kin
 Changed pg_hba.conf, now local connections from the postgres user are md5(passwords) and not peer authed and changed ipv4 and v6 to allow ::/0 
 
 When changing config files, applications that use them need to be restarted for changes to take effect
+
+Basically added nginx and gunicorn and other stuff that i covered else where

@@ -286,7 +286,7 @@ Okay, i changed the code to work with the ec2 instance and now the alembic runs 
 For Production servers; changes to the code should really not be happening, therefore there is no need to use the --reload here
 uvicorn --host 0.0.0.0 app.main:app should be fine
 The api works, yay! However if it reboots or something it will not automatically run the uvicorn server, so we use gunicorn
-"gunicorn -w 1 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:8000
+"gunicorn -w 1 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:8000"
 
 Why not just use Uvicorn?
 
@@ -301,3 +301,94 @@ Gunicorn adds:
 ✔ multiple workers
 ✔ crash recovery
 ✔ better concurrency control
+
+The gunicorn suffers from two issues atm, it hangs a terminal and it needs to be manually started upon reboot
+To solve this issue, we are going to make our own service
+We made a service called 'api' in /etc/systemd/system and ran it; use "systemctl status api" to check if it's active or not
+And by default we need to use systemctl enable api so it starts by itself on reboot
+
+Nginx:
+Uses port 80, i guess
+It is a proxy and handles traffic, kinda
+edited the default file with at location;
+                proxy_pass http://localhost:8000;
+                proxy_http_version 1.1;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $http_host;
+                proxy_set_header X-NginX-Proxy true;
+                proxy_redirect off;
+=========Didn't do this, oof==========================================
+Now we need to take our ip from http to https with a domain name, yay!
+I don't think im gonna get a domain name, so we'll have to make due without one
+Where to get?
+-Namecheap
+-Godaddy
+-Amazon, etc
+Setting a domain name isn't really complicated, just search google if you need to 
+If you want SSL, just check out certbot
+======================================================================
+
+Firewall(inside instance/Linux, not cloud SG):
+UFW
+Usually 5432 is not allowed as remote access to database is risky
+Changed allow: http, https, ssh, port 5432
+Enabled ufw with current rules
+
+After you deployed a project, usually you'd want to edit the project's code
+This is usually done with CI/CD pipelines, but i guess we will do things manually for now
+Pseudo CI/CD:
+    Commit and push your changes to github
+    Go to the directory with your app(app/src)
+    git pull while in that directory
+    If you changed requirements.txt, just remember to install everything from it
+    then to see the changes, use "sudo systemctl restart api"
+It still is best to set a CI/CD pipelines though
+
+Docker: "Finally, you're time... has come"
+Docker (Simple Explanation) by chatgpt, i was lazy
+It basically auto does the whole hop into an empty vm and set up python, pip and other dependencies automatically.
+
+Docker is a tool that packages an application and everything it needs to run into a single unit called a container.
+
+This includes:
+
+The code
+Python version
+Dependencies (requirements.txt)
+System libraries
+Runtime settings
+What problem does Docker solve?
+
+Normally, when deploying on a server (like EC2), you manually set up the environment:
+
+Install Python
+Install dependencies (pip install -r requirements.txt)
+Configure the system
+Run the app
+
+This can lead to issues like:
+
+“It works on my machine, but not on the server.”
+
+How Docker changes this
+
+Instead of manually setting up the server, you write a Dockerfile that describes the setup steps once.
+
+Docker then:
+
+Builds an image (a blueprint of your app + environment)
+Runs a container (a running instance of that image)
+Key idea
+EC2 setup = manually recreating your environment step by step
+Docker = writing those steps once and letting it run anywhere automatically
+Why Docker is useful
+Ensures the app runs the same everywhere
+Removes environment setup problems
+Makes deployment easier and faster
+Lets multiple services run in isolated containers (e.g., API, database, Redis)
+One-line summary
+
+Docker packages your application and its environment so it can run consistently on any machine without manual setup.

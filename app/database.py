@@ -15,23 +15,22 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from .config import settings
 
 #For deployment
-import os
+#import os
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+#DATABASE_URL = os.getenv("DATABASE_URL")
 
-if not DATABASE_URL:
-    raise Exception("DATABASE_URL not set")
+#if not DATABASE_URL:
+#   raise Exception("DATABASE_URL not set")
 
-DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://")
+#DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://")
 
-engine = create_engine(DATABASE_URL)
+#engine = create_engine(DATABASE_URL)
 #---------------------------------------------------------------------------
-''' taken out for deployment migrations
-#This declaration is bad practice, needs environmental variables
+
 SQLALCHEMY_DATABASE_URL = f"postgresql://{settings.database_username}:{settings.database_password}@{settings.database_hostname}:{settings.database_port}/{settings.database_name}"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
-'''
+
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
