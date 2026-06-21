@@ -392,3 +392,7 @@ Lets multiple services run in isolated containers (e.g., API, database, Redis)
 One-line summary
 
 Docker packages your application and its environment so it can run consistently on any machine without manual setup.
+
+Me again, docker is kinda cool, i guess, I haven't really experienced the problem it solved so idk, but I made a Dockerfile
+And it seems Dockers uses quite a bit of resources, oof my laptop is cooked
+I used 'docker build -t fastapi_tutorial' to make the image
