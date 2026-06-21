@@ -1,4 +1,4 @@
-FROM python:3.14.3
+FROM  python:3.12-slim-bookworm
 #Docker's working directory
 WORKDIR /usr/src/app
 #This is makes it so changing the requirements runs everything below this line con...
