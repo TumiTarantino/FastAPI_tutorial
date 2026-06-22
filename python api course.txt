@@ -549,3 +549,6 @@ So Docker has a github equal called dockerhub, if you have docker desktop, then 
 When pushing to dockerhub the image you push from your computer has to match the repository you create, that highly likely won't be the case so...
 to change name: "docker image tag "<source image> <target image>"
 to push repo:   "docker push <repo name>:<tagname>"
+
+changed or separate docker compose into its dev and prod counterparts
+"docker-compose -f docker-compose-prod.yml up/down etc"
