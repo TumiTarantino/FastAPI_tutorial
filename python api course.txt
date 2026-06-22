@@ -395,4 +395,138 @@ Docker packages your application and its environment so it can run consistently 
 
 Me again, docker is kinda cool, i guess, I haven't really experienced the problem it solved so idk, but I made a Dockerfile
 And it seems Dockers uses quite a bit of resources, oof my laptop is cooked
-I used 'docker build -t fastapi_tutorial' to make the image
+BEFORE i made the image i added the files; nginx and gunicorn.service, they don't have anything to do with the code, but
+I added them since i saw that the instructor's github repository also has them.
+I used 'docker build -t fastapi_tutorial .' to make the image
+ docker images (My first image, it was bad and slow, it didn't have a dockerignore, so it included EVERYTHING, like the venv)
+i Info →   U  In UseIMAGE                     ID             DISK USAGE   CONTENT SIZE   EXTRA
+fastapi_tutorial:latest   18fa25ba736a       2.02GB          506MB    
+
+docker images(My second image, not bad it was faster, it had a dockerignore )
+i Info →   U  In UseIMAGE ID             DISK USAGE   CONTENT SIZE   EXTRA
+fastapi_tutorial:latest   825210abfe3a        405MB         94.2MB   
+
+When making a docker image, try very hard to create an optimized Dockerfile and only include what you really need inside and ignore everything else
+
+We're gonna use docker compose as opposed to docker run, i think docker compose uses a file instead of having to remember each single command used when running it
+Making a docker compose yml file, it has syntax spacing like python, get more familar with it since idk
+Use 'docker-compose up -d' to use it
+It crashed for some reason, use "docker ps -a" to check its status and "docker logs <image-name>" to check what went wrong
+It seems it didn't have access to environment variables(again)
+You can create a env_file(point to a .env file) field or a environment(put the env variables in the yml directly) field
+
+Okay i created the image and now it's running, but there was a lot of issues, well 2 main operations
+1st:
+    My schemas.py had called UserOut in the Post class, before it was defined, so there was an issue
+    I did see this issue before but figured it was a non issue because of how Pydantic/Python does stuff
+    Anyway i fixed by adding "" around UserOut, since i remember that somehow tells Python that this can be defined later, or something
+    You can also get the __future__ thingie import or just define UserOut in the actual code before using it.
+2nd:
+    This one is more annoying and as of writing these notes, I still don't really get it, but basically...
+    I made a dockercompose yml file and in it i said a the name of the database is postgres, now postgres is weird as it can mean anything from 
+    a user, to the db, to anything basically, my main confusion came WHICH database is it trying to connect to as i first called it localhost
+    but saw that the instructor called it postgres, so i assumed that it might be the one on aws, but instinctively(idk hehe) I was like, nahhh
+    probably not, since i'd have to provide the specific ip pointing to the ec2 instance and i didn't do that anywhere, which lead me to ask GPT and it said:
+    What went wrong (core issue)
+
+You set your database hostname to:
+
+DATABASE_HOSTNAME=postgres
+
+but you never actually created a database service/container named postgres.
+
+So your FastAPI app tried to connect to:
+
+postgres:5432
+
+inside Docker, and Docker responded:
+
+“I don’t know what postgres is.”
+
+Why this breaks (important concept)
+
+Inside Docker, service names act like DNS hostnames.
+
+So:
+
+localhost → the current container (wrong for DB access)
+postgres → only works if a service named postgres exists in docker-compose
+anything else → must be a real reachable host
+
+Right now, you referenced a hostname that does not exist in your Docker network.
+
+The root mistake (simple version)
+
+You assumed:
+
+“If I call it postgres, Docker will know it’s a database.”
+
+But Docker does NOT create services automatically from names.
+
+You must explicitly define them.
+
+How to fix it (2 correct approaches)
+Option 1 — Use Postgres inside Docker (recommended)
+
+You must define a database service:
+
+services:
+  api:
+    ...
+  postgres:
+    image: postgres:15
+
+Now this works:
+
+DATABASE_HOSTNAME=postgres
+
+because the service actually exists.
+
+Option 2 — Use external Postgres (your PC or cloud)
+
+If Postgres is NOT inside Docker, then postgres is meaningless.
+
+You must change hostname to:
+
+If running locally on your machine:
+host.docker.internal
+If using cloud DB (Render / Supabase / AWS):
+actual-db-host-url
+Key rule to remember
+
+The database hostname must match a real network address that your container can reach.
+
+In Docker, that means:
+
+Either:
+a service name in docker-compose.yml
+Or:
+a real external host (IP/domain)
+Debug checklist for future
+
+When DB connection fails, ask:
+
+1. Where is my database running?
+inside Docker → use service name
+outside Docker → use host machine / cloud URL
+2. Does the hostname actually exist?
+
+Try thinking:
+
+“If I ping postgres from inside the container, would it work?”
+
+3. Is Docker DNS involved?
+
+Inside containers:
+
+service names resolve automatically
+but only if defined in compose
+One-line summary
+
+You tried to connect to a Docker service name that didn’t exist, instead of either:
+
+defining the service in docker-compose, or
+using a real reachable database host.
+
+SO yeah, go Docker!
+Using localhost:8000 works for some reason, I might need to actually lock in for this one
