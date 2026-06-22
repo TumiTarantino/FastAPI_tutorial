@@ -530,3 +530,10 @@ using a real reachable database host.
 
 SO yeah, go Docker!
 Using localhost:8000 works for some reason, I might need to actually lock in for this one
+
+So it seems now after fixing the yml, the main issue is timing issues
+As far as i can tell the api starts up, but the database isn't ready yet, which also mean that the alembic head cant run properly, which i guess is crashing the container/app?
+I believe this is a race condition?
+So even though the Tutorial seems to not be facing such issues, i will have to deal with this decisively
+Basically, it seems to work now, the api and postgres service had a depends on and a healthcheck added to them respectively
+The database works too, docker is interesting and it seems simpler in a sense to set up a database
