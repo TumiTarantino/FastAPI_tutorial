@@ -16,6 +16,10 @@ services:
       - SECRET_KEY=your_secret
       - ALGORITHM=HS256
       - ACCESS_TOKEN_EXPIRE_MINUTES=300
+    #Binding volume, binds current folder to folder in container, ro is read only, the container can't write to my computer i can write to the container
+    volumes:
+      - ./:/usr/src/app:ro
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     #Added to fix race condition
     depends_on:
       postgres:

@@ -537,3 +537,15 @@ I believe this is a race condition?
 So even though the Tutorial seems to not be facing such issues, i will have to deal with this decisively
 Basically, it seems to work now, the api and postgres service had a depends on and a healthcheck added to them respectively
 The database works too, docker is interesting and it seems simpler in a sense to set up a database
+
+There is small, but obvious issue, when using developing or making changes to the code, the changes don't reflect on the docker container
+docker exec -it <name of container> bash can be used to go inside the container to see what's happening
+But to solve this issue, you can use a bind mount to sync the relevant folder in your dev environment to the container, in the docker-compose yml file
+The bind works, but the code when called via client or whatever doesn't reflect anychanges made?
+It seems our Dockerfile, didn't have the --reload on uvicorn, so it didn't work, you can change the dockerfile, but in prod, you don't want the --reload
+So you edit the docker-compose file to overwrite that behavior, it's a bit slow but it works
+
+So Docker has a github equal called dockerhub, if you have docker desktop, then you probably already have a docker hub account too
+When pushing to dockerhub the image you push from your computer has to match the repository you create, that highly likely won't be the case so...
+to change name: "docker image tag "<source image> <target image>"
+to push repo:   "docker push <repo name>:<tagname>"
