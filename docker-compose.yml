@@ -4,7 +4,7 @@ services:
   api:
   #Looks for a dockerfile and starts the dockerfile
     build: .
-    #HOST:CONTAINER, 8000 (my laptop,e.g)  →  8000 (inside Docker container)
+    #HOST:CONTAINER, 8000 (my laptop,e.gd)  →  8000 (inside Docker container)
     ports:
       - "8000:8000"
     environment:
