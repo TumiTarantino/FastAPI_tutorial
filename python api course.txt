@@ -552,3 +552,12 @@ to push repo:   "docker push <repo name>:<tagname>"
 
 changed or separate docker compose into its dev and prod counterparts
 "docker-compose -f docker-compose-prod.yml up/down etc"
+
+Testing:
+"at the moment, if we change a part of code, we don't know if that change broke something in the codebase and we also have to manually check to see the changes"
+Disclamier by Mr. Sanjeev, he isn't that familar with testing, but would like us to have a starting point for it nontheless, W mans.
+We will be using pytest
+#File names for pytest in to start with test_ or end with _test, or you can specify which file needs testing specifically
+#Also the naming of the function also seems to matter a lot, it seems the functions need to start with 'test'
+#Use 'pytest -v' to increase verbosity
+#a __init__.py needs to be added to the tests directory?
