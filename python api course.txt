@@ -560,4 +560,6 @@ We will be using pytest
 #File names for pytest in to start with test_ or end with _test, or you can specify which file needs testing specifically
 #Also the naming of the function also seems to matter a lot, it seems the functions need to start with 'test'
 #Use 'pytest -v' to increase verbosity
-#a __init__.py needs to be added to the tests directory?
+#a __init__.py needs to be added to the tests directory?,
+The calc and test calc have most of the notes, but...
+When handling exceptions you want to create your own class or be as specific as possible regarding them.
