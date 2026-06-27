@@ -5,7 +5,7 @@
 import pytest
 from app.calc import add, subtract, multiply, divide, BankAccount, InsufficientFunds
 
-#What is a fixture?
+#What is a fixture? It is a fixture - Future me, hehe
 @pytest.fixture
 def zero_bank_account():
     return BankAccount()
