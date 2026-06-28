@@ -568,3 +568,5 @@ Testing The API,
 Testing create user is kinda simple, you can go as crazy as you want and even use schemas, but there is a small issue
 When the test creates a user, it creates one in the development database and also its created user isn't being deleted
 To help with this, we are overriding the database and it seems it's easy as the database uses dependency injection
+
+That didn't really solve the issue and instead pytest's fixtures have had to be used
