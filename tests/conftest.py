@@ -41,3 +41,12 @@ def client(session):
     #Runs our test, kinda
     yield TestClient(app)
     #run our code after the test finishes
+
+@pytest.fixture
+def test_user(client):
+    user_data = {"email": "tomy@gmail.com", "password" : "Password123"}
+    response = client.post("/users/", json=user_data)
+    assert response.status_code == 201
+    new_user = response.json()
+    new_user['password'] = user_data['password']
+    return new_user

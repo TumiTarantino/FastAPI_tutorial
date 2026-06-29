@@ -570,3 +570,12 @@ When the test creates a user, it creates one in the development database and als
 To help with this, we are overriding the database and it seems it's easy as the database uses dependency injection
 
 That didn't really solve the issue and instead pytest's fixtures have had to be used
+I won't go into much detail as i have a small understanding of stuff, but the main message of testing:
+Each test should be independent of each other; one test failing should not cause another fail and vice versa
+If they are dependent on one another then you are doing it wrong and need to think properly.
+
+We changed the scope(function to module) of the fixtures which ended up not being a good change as it meant that the login test is dependent on the create user test
+You want to tweak the scope of your pytest fixtures to suit your tests
+Created a test user fixture so the login isn't dependent on the create user
+Tested jwt in login user and etc
+Created conftest, which kinda auto imports fixtures
