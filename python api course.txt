@@ -579,3 +579,4 @@ You want to tweak the scope of your pytest fixtures to suit your tests
 Created a test user fixture so the login isn't dependent on the create user
 Tested jwt in login user and etc
 Created conftest, which kinda auto imports fixtures
+Created test posts, which uses a authorized client fixture and some preconfiged fixture posts
